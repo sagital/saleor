@@ -15,6 +15,7 @@ from .page.schema import PageMutations, PageQueries
 from .payment.schema import PaymentMutations, PaymentQueries
 from .plugins.schema import PluginsMutations, PluginsQueries
 from .product.schema import ProductMutations, ProductQueries
+from .reservation.schema import ReservationMutations
 from .shipping.schema import ShippingMutations, ShippingQueries
 from .shop.schema import ShopMutations, ShopQueries
 from .translations.schema import TranslationQueries
@@ -61,6 +62,7 @@ class Mutation(
     PageMutations,
     PaymentMutations,
     ProductMutations,
+    ReservationMutations,
     ShippingMutations,
     ShopMutations,
     WarehouseMutations,
