@@ -26,6 +26,9 @@ from ...core.transactions import transaction_with_commit_on_errors
 from ...order import models as order_models
 from ...payment import models as payment_models
 from ...product import models as product_models
+from ...reservation.reservations import (
+    get_total_reserved_quantity, remove_user_stock_reservations
+)
 from ...warehouse.availability import check_stock_quantity, get_available_quantity
 from ..account.i18n import I18nMixin
 from ..account.types import AddressInput
@@ -92,7 +95,7 @@ def update_checkout_shipping_method_if_invalid(
         checkout.save(update_fields=["shipping_method", "last_change"])
 
 
-def check_lines_quantity(variants, quantities, country):
+def check_lines_quantity(variants, quantities, country, user=None):
     """Check if stock is sufficient for each line in the list of dicts."""
     for variant, quantity in zip(variants, quantities):
         if quantity < 0:
@@ -114,10 +117,13 @@ def check_lines_quantity(variants, quantities, country):
                     )
                 }
             )
+
+        reserved_quantity = get_total_reserved_quantity(user, variant)
+
         try:
-            check_stock_quantity(variant, country, quantity)
+            check_stock_quantity(variant, country, quantity, reserved_quantity)
         except InsufficientStock as e:
-            available_quantity = get_available_quantity(e.item, country)
+            available_quantity = get_available_quantity(e.item, country, reserved_quantity)
             message = (
                 "Could not add item "
                 + "%(item_name)s. Only %(remaining)d remaining in stock."
@@ -200,7 +206,7 @@ class CheckoutCreate(ModelMutation, I18nMixin):
 
     @classmethod
     def process_checkout_lines(
-        cls, lines, country
+        cls, lines, country, user
     ) -> Tuple[List[product_models.ProductVariant], List[int]]:
         variant_ids = [line.get("variant_id") for line in lines]
         variants = cls.get_nodes_or_error(
@@ -214,7 +220,7 @@ class CheckoutCreate(ModelMutation, I18nMixin):
         quantities = [line.get("quantity") for line in lines]
 
         validate_variants_available_for_purchase(variants)
-        check_lines_quantity(variants, quantities, country)
+        check_lines_quantity(variants, quantities, country, user)
 
         return variants, quantities
 
@@ -253,7 +259,7 @@ class CheckoutCreate(ModelMutation, I18nMixin):
             (
                 cleaned_input["variants"],
                 cleaned_input["quantities"],
-            ) = cls.process_checkout_lines(lines, country)
+            ) = cls.process_checkout_lines(lines, country, info.context.user)
 
         cleaned_input["shipping_address"] = cls.retrieve_shipping_address(user, data)
         cleaned_input["billing_address"] = cls.retrieve_billing_address(user, data)
@@ -311,6 +317,12 @@ class CheckoutCreate(ModelMutation, I18nMixin):
                         code=exc.code,
                     )
             info.context.plugins.checkout_quantity_changed(instance)
+
+        # If authenticated, remove any stock reservations made by the user
+        user = info.context.user
+        if user.is_authenticated:
+            remove_user_stock_reservations(user, variants)
+
         # Save provided addresses and associate them to the checkout
         cls.save_addresses(instance, cleaned_input)
 
@@ -370,7 +382,9 @@ class CheckoutLinesAdd(BaseMutation):
         variants = cls.get_nodes_or_error(variant_ids, "variant_id", ProductVariant)
         quantities = [line.get("quantity") for line in lines]
 
-        check_lines_quantity(variants, quantities, checkout.get_country())
+        check_lines_quantity(
+            variants, quantities, checkout.get_country(), info.context.user
+        )
         validate_variants_available_for_purchase(variants)
 
         if variants and quantities:
@@ -594,7 +608,7 @@ class CheckoutShippingAddressUpdate(BaseMutation, I18nMixin):
 
         # Resolve and process the lines, validating variants quantities
         if lines:
-            cls.process_checkout_lines(lines, country)
+            cls.process_checkout_lines(lines, country, info.context.user)
 
         update_checkout_shipping_method_if_invalid(
             checkout, lines, info.context.discounts
