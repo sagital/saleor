@@ -63,7 +63,7 @@ class Address(models.Model):
     country = CountryField()
     country_area = models.CharField(max_length=128, blank=True)
     phone = PossiblePhoneNumberField(blank=True, default="")
-
+    tax_id = models.CharField(max_length=30, blank=True)
     objects = AddressQueryset.as_manager()
 
     class Meta:

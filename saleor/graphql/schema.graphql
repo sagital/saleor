@@ -125,6 +125,7 @@ type Address implements Node {
   country: CountryDisplay!
   countryArea: String!
   phone: String
+  taxId: String!
   isDefaultShippingAddress: Boolean
   isDefaultBillingAddress: Boolean
 }
@@ -155,6 +156,7 @@ input AddressInput {
   country: CountryCode
   countryArea: String
   phone: String
+  taxId: String
 }
 
 type AddressSetDefault {

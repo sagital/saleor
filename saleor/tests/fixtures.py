@@ -396,6 +396,7 @@ def address(db):  # pylint: disable=W0613
         postal_code="53-601",
         country="PL",
         phone="+48713988102",
+        tax_id="RO8539958",
     )
 
 

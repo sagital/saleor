@@ -207,6 +207,7 @@ def test_address_as_data(address):
         "country": "PL",
         "country_area": "",
         "phone": "+48713988102",
+        "tax_id": "RO8539958",
     }
 
 

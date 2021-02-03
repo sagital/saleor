@@ -34,6 +34,7 @@ class AddressInput(graphene.InputObjectType):
     country = CountryCodeEnum(description="Country.")
     country_area = graphene.String(description="State or province.")
     phone = graphene.String(description="Phone number.")
+    tax_id = graphene.String(description="Company Tax Id.")
 
 
 @key(fields="id")
@@ -65,6 +66,7 @@ class Address(CountableDjangoObjectType):
             "postal_code",
             "street_address_1",
             "street_address_2",
+            "tax_id",
         ]
 
     @staticmethod
