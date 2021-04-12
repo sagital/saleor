@@ -11,6 +11,7 @@ RUN apt-get -y update \
 COPY requirements_dev.txt /app/
 WORKDIR /app
 RUN pip install --upgrade pip
+RUN pip install --upgrade setuptools
 RUN pip install -r requirements_dev.txt
 
 ### Final image
