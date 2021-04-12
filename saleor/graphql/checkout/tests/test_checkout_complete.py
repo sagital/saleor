@@ -577,14 +577,11 @@ def test_checkout_complete_no_payment(
     checkout.save()
     checkout_id = graphene.Node.to_global_id("Checkout", checkout.pk)
     variables = {"checkoutId": checkout_id, "redirectUrl": "https://www.example.com"}
-    orders_count = Order.objects.count()
     response = user_api_client.post_graphql(MUTATION_CHECKOUT_COMPLETE, variables)
     content = get_graphql_content(response)
     data = content["data"]["checkoutComplete"]
-    assert data["checkoutErrors"][0]["message"] == (
-        "Provided payment methods can not cover the checkout's total amount"
-    )
-    assert orders_count == Order.objects.count()
+    assert data["order"]["id"]
+    assert Order.objects.count()
 
 
 @patch.object(PluginsManager, "process_payment")

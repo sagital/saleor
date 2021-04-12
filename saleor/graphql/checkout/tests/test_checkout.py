@@ -2,7 +2,7 @@ import datetime
 import uuid
 import warnings
 from decimal import Decimal
-from unittest import mock
+from unittest import mock, skip
 from unittest.mock import patch
 
 import graphene
@@ -2940,6 +2940,7 @@ def test_clean_checkout_no_billing_address(
     assert e.value.error_dict["billing_address"][0].message == msg
 
 
+@skip("we no longer require payment to be done before completing checkout")
 def test_clean_checkout_no_payment(checkout_with_item, shipping_method, address):
     checkout = checkout_with_item
     checkout.shipping_address = address

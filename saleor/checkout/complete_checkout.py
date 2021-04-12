@@ -570,19 +570,23 @@ def complete_checkout(
         gateway.payment_refund_or_void(payment, manager)
         raise exc
 
-    txn = _process_payment(
-        payment=payment,  # type: ignore
-        store_source=store_source,
-        payment_data=payment_data,
-        order_data=order_data,
-        manager=manager,
-    )
+    if payment is not None:
+        txn = _process_payment(
+            payment=payment,  # type: ignore
+            store_source=store_source,
+            payment_data=payment_data,
+            order_data=order_data,
+            manager=manager,
+        )
 
-    if txn.customer_id and user.is_authenticated:
-        store_customer_id(user, payment.gateway, txn.customer_id)  # type: ignore
+        if txn.customer_id and user.is_authenticated:
+            store_customer_id(user, payment.gateway, txn.customer_id)  # type: ignore
 
-    action_required = txn.action_required
-    action_data = txn.action_required_data if action_required else {}
+        action_required = txn.action_required
+        action_data = txn.action_required_data if action_required else {}
+    else:
+        action_required = False
+        action_data = {}
 
     order = None
     if not action_required:

@@ -74,8 +74,10 @@ def clean_checkout_payment(
 ):
     clean_billing_address(checkout_info, error_code)
     if not is_fully_paid(manager, checkout_info, lines, discounts):
-        gateway.payment_refund_or_void(last_payment, manager)
-        raise ValidationError(
-            "Provided payment methods can not cover the checkout's total amount",
-            code=error_code.CHECKOUT_NOT_FULLY_PAID.value,
-        )
+        gateway.payment_refund_or_void(last_payment)
+        # CT we want to allow unpaid orders
+        if last_payment is not None:
+            raise ValidationError(
+                "Provided payment methods can not cover the checkout's total amount",
+                code=error_code.CHECKOUT_NOT_FULLY_PAID.value,
+            )
