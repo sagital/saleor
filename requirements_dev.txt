@@ -74,7 +74,7 @@ google-cloud-core==1.6.0; python_version >= "3.5" and python_full_version < "3.0
 google-cloud-pubsub==2.4.0; python_version >= "3.6"
 google-cloud-storage==1.37.0; (python_version >= "2.7" and python_full_version < "3.0.0") or (python_full_version >= "3.6.0")
 google-crc32c==1.1.2; python_version >= "3.6" and python_full_version < "3.0.0" or python_version >= "3.6" and python_full_version >= "3.6.0"
-google-i18n-address==2.4.0
+git+https://github.com/sagital/google-i18n-address.git@cablu-3.0#egg=google-i18n-address
 google-measurement-protocol==1.1.0
 google-resumable-media==1.2.0; python_version >= "3.5" and python_full_version < "3.0.0" or python_version >= "3.5" and python_full_version >= "3.6.0"
 googleapis-common-protos==1.53.0; python_version >= "3.6" and python_full_version < "3.0.0" or python_full_version >= "3.6.0" and python_version >= "3.6"
