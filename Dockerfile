@@ -10,8 +10,6 @@ RUN apt-get -y update \
 # Install Python dependencies
 COPY requirements_dev.txt /app/
 WORKDIR /app
-RUN pip install --upgrade pip
-RUN pip install 'setuptools==49.2.1'
 RUN pip install -r requirements_dev.txt
 
 ### Final image
