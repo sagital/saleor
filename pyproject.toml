@@ -35,7 +35,7 @@ draftjs-sanitizer = "^1.0.0"
 faker = ">=4.1,<7.0"
 freezegun = "^0"
 google-cloud-storage = "^1.29.0"
-google-i18n-address = "^2.3.5"
+google-i18n-address = {git = "https://github.com/sagital/google-i18n-address.git", rev = "cablu-3.0"}
 google-measurement-protocol = "^1.0"
 graphene-django = "~2.13.0"
 graphene-federation = "^0.1.0"
