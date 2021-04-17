@@ -42,7 +42,8 @@ jobs:
           # Target Docker Hub with the SHA value
           # and branch name
           TAGS=$"\
-          ghcr.io/${{ steps.image.outputs.image_name }}:${CLEAN_BRANCH_NAME}\
+          ghcr.io/${{ steps.image.outputs.image_name }}:${CLEAN_BRANCH_NAME},\
+          ghcr.io/${{ steps.image.outputs.image_name }}:sha-${SHA}\
           "
 
           # Set version name for open-containers version label as:
