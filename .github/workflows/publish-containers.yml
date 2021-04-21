@@ -27,7 +27,7 @@ jobs:
 
 
       # Outputs the containers tags for staging branches
-      # Only publishes them onto Github Registry
+      # Only publishes them onto Docker Hub
       - name: Prepare Tags for Staging
         id: staging
         if: ${{ startsWith(github.ref, 'refs/heads/') }}
@@ -42,8 +42,8 @@ jobs:
           # Target Docker Hub with the SHA value
           # and branch name
           TAGS=$"\
-          ghcr.io/${{ steps.image.outputs.image_name }}:${CLEAN_BRANCH_NAME},\
-          ghcr.io/${{ steps.image.outputs.image_name }}:sha-${SHA}\
+          cip123/saleor:${CLEAN_BRANCH_NAME},\
+          cip123/saleor:sha-${SHA}\
           "
 
           # Set version name for open-containers version label as:
@@ -73,11 +73,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: Login to Dockerhub
+      - name: Login to DockerHub
         if: ${{ startsWith(github.ref, 'refs/heads/') }}
         uses: docker/login-action@v1
         with:
-          repository: cip123/saleor
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
